@@ -39,10 +39,10 @@ public class Group2HrisApplication {
 
 			Statement statement = connection.createStatement();
 
-			ResultSet resultSet = statement.executeQuery("select * from actor");
+			ResultSet resultSet = statement.executeQuery("select * from allowed_performance_values");
 
 			while (resultSet.next()){
-				System.out.println(resultSet.getString("first_name"));
+				System.out.println(resultSet.getInt("performance_rank"));
 			}
 
 		} catch (Exception e){
@@ -56,5 +56,4 @@ public class Group2HrisApplication {
 		stringToTrim = stringToTrim.trim();
 		return stringToTrim;
 	}
-
 }
