@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -28,6 +29,9 @@ public class Group2HrisApplication {
 		String password = bufferedReader.readLine();
 		password = trimString(password);
 
+		Employee myemployee = new Employee();
+
+
 		bufferedReader.close();
 
 		try {
@@ -38,12 +42,22 @@ public class Group2HrisApplication {
 			System.out.println("Successful");
 
 			Statement statement = connection.createStatement();
+			//grabs employee data from SQL table after connection has been created
 
-			ResultSet resultSet = statement.executeQuery("select * from allowed_performance_values");
+			//grabs payroll data
+			ResultSet resultSetPayroll = statement.executeQuery("select * from payroll");
 
-			while (resultSet.next()){
-				System.out.println(resultSet.getInt("performance_rank"));
-			}
+			Employee grabColumns = new Employee();
+			grabColumns.readPayroll(resultSetPayroll);
+
+			//grabs employee data
+			ResultSet resultSetEmployee = statement.executeQuery("select * from employee");
+			grabColumns.readEmployee(resultSetEmployee);
+
+			//grabs benefits data
+			ResultSet resultSetBenefits = statement.executeQuery("select * from benefits");
+			grabColumns.readBenefits(resultSetBenefits);
+
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -56,4 +70,6 @@ public class Group2HrisApplication {
 		stringToTrim = stringToTrim.trim();
 		return stringToTrim;
 	}
+
 }
+
