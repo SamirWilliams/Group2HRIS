@@ -80,7 +80,6 @@ public class Group2HrisApplication {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-
 	}
 
 	public static String trimString(String stringToTrim){

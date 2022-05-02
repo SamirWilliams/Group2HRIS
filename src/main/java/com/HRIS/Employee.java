@@ -53,8 +53,8 @@ public class Employee {
             salary.add(resultSet.getDouble("salary"));
 
         }
-
     }
+
     public void readEmployee(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             empId.add(resultSet.getInt("emp_id"));
@@ -68,8 +68,8 @@ public class Employee {
             inTraining.add(resultSet.getBoolean("in_training"));
             performace.add(resultSet.getInt("performance"));
         }
-
     }
+
     public void readBenefits(ResultSet resultSet) throws SQLException {
         while(resultSet.next()) {
             benefitsEmpId.add(resultSet.getInt("emp_id"));
