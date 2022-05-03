@@ -344,11 +344,13 @@ public class Employee {
 
     public void setEmail(int empID, String email) {
         int index = getIndexOfEmpID(empID);
-        if (index == -1){
+        if (index == -1) {
             System.out.println("Employee Not Found");
         } else {
             this.email.set(index, email);
             System.out.println("Email Change Successful");
+        }
+    }
 
     public void setState(int empID, String state) {
         int index = getIndexOfEmpID(empID);
