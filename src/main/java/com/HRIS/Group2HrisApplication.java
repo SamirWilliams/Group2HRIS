@@ -5,16 +5,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.*;
+import java.util.Scanner;
 
 @SpringBootApplication
 public class Group2HrisApplication {
 
-	public static void main(String[] args) throws Exception{
+	public static void main(String[] args) throws Exception {
 
 		SpringApplication.run(Group2HrisApplication.class, args);
 
@@ -29,47 +30,172 @@ public class Group2HrisApplication {
 		String password = bufferedReader.readLine();
 		password = trimString(password);
 
-		Employee myemployee = new Employee();
-
-
 		bufferedReader.close();
+
+		Connection connection = null;
+		Employee grabColumns = new Employee();
 
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 
-			Connection connection = DriverManager.getConnection(url, user, password);
+			connection = DriverManager.getConnection(url, user, password);
 
-			System.out.println("Successful");
+			System.out.println("Connection Successful");
 
 			Statement statement = connection.createStatement();
 			//grabs employee data from SQL table after connection has been created
 
+			//grabs employee data
+			ResultSet resultSetEmployee = statement.executeQuery("select * from actor");
+			grabColumns.readEmployee(resultSetEmployee);
+
 			//grabs payroll data
 			ResultSet resultSetPayroll = statement.executeQuery("select * from payroll");
-
-			Employee grabColumns = new Employee();
 			grabColumns.readPayroll(resultSetPayroll);
-
-			//grabs employee data
-			ResultSet resultSetEmployee = statement.executeQuery("select * from employee");
-			grabColumns.readEmployee(resultSetEmployee);
 
 			//grabs benefits data
 			ResultSet resultSetBenefits = statement.executeQuery("select * from benefits");
 			grabColumns.readBenefits(resultSetBenefits);
 
-
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 
+		Scanner input = new Scanner(System.in);
+
+		int empID = -1;
+		boolean empIDCheck;
+
+		do {
+			System.out.print("Enter Employee ID or Enter 0 to Exit Program: ");
+			try {
+				empID = input.nextInt();
+			} catch (Exception e) {
+				System.out.println("Invalid Choice");
+			}
+			if (empID == 0){
+				System.exit(0);
+			}
+			empIDCheck = employeeValidation(grabColumns, empID);
+			if (empID < 1 || !empIDCheck) {
+				System.out.println("Invalid ID");
+			}
+		} while (!empIDCheck);
+
+		int menuChoice = -1;
+
+		//TODO Menu System
+		if (managementCheck(connection, empID)){
+			//TODO Management Menu
+			do {
+				System.out.println("Make a Selection: ");
+				System.out.println("[1] List All Employees");
+				System.out.println("[2] List Specific Role");
+				System.out.println("[3] List Specific Employee");
+				System.out.println("[4] Add Employee");
+				System.out.println("[5] Generate Payroll");
+				System.out.println("[0] Exit");
+				try {
+					menuChoice = input.nextInt();
+				} catch (Exception e) {
+					System.out.println("Invalid Choice");
+				}
+				if (menuChoice < 0 || menuChoice > 5) {
+					System.out.println("Invalid Choice");
+				}
+			} while (menuChoice != 0);
+		} else {
+			//TODO Employee Menu
+			do {
+				System.out.println("Make a Selection: ");
+				System.out.println("[1] List PTO");
+				System.out.println("[2] List Current Salary");
+				System.out.println("[3] List Your Information");
+				System.out.println("[0] Exit");
+				try {
+					menuChoice = input.nextInt();
+				} catch (Exception e) {
+					System.out.println("Invalid Choice");
+				}
+				if (menuChoice < 0 || menuChoice > 3) {
+					System.out.println("Invalid Choice");
+				}
+			} while (menuChoice != 0);
+		}
+
+		System.out.println("pass");
+
+
 	}
 
+	//Trims string input after "=" Character
 	public static String trimString(String stringToTrim){
 		stringToTrim = stringToTrim.substring(stringToTrim.indexOf("=") + 1);
 		stringToTrim = stringToTrim.trim();
 		return stringToTrim;
 	}
+
+	//Check if given empID is in the employee database
+	public static boolean employeeValidation(Employee employeeList, int empID) throws Exception {
+		try {
+			if (employeeList.getEmpID().contains(empID)){
+				return true;
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	//TODO Replace with new employee validation method that uses employee class
+	//Checks connected database for given empID
+	public static boolean employeeValidation(Connection connection, int empID) {
+		String selectString = "select emp_id from employee where emp_id = " + empID;
+		try{
+			PreparedStatement selectStatement = connection.prepareStatement(selectString);
+			ResultSet resultSet = selectStatement.executeQuery();
+			//If resultSet is empty returns false
+			if (!resultSet.isBeforeFirst()){
+				return false;
+			}else {
+				//iterates through the resultSet to check if empID exists,
+				while (resultSet.next()){
+					//Returns true if empID is found within the resultSet
+					if (resultSet.getInt("emp_id") == empID){
+						return true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	//TODO Replace with new management check method that uses employee class
+	//Checks if given empID is in management
+	public static boolean managementCheck(Connection connection, int empID){
+		String selectString = "select in_management from employee where emp_id = " + empID;
+		try{
+			PreparedStatement selectStatement = connection.prepareStatement(selectString);
+			ResultSet resultSet = selectStatement.executeQuery();
+			//If resultSet is empty returns false
+			if (!resultSet.isBeforeFirst()){
+				return false;
+			}else {
+				if (resultSet.getInt("in_management") == 1){
+					return true;
+				} else {
+					return false;
+				}
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 
 }
 
