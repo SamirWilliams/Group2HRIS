@@ -46,8 +46,10 @@ public class Employee {
         while (resultSet.next()){
             payrollEmpId.add(resultSet.getInt("emp_id"));
             salary.add(resultSet.getDouble("salary"));
+
         }
     }
+
     public void readEmployee(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             empId.add(resultSet.getInt("emp_id"));
@@ -62,6 +64,7 @@ public class Employee {
             performance.add(resultSet.getInt("performance"));
         }
     }
+
     public void readBenefits(ResultSet resultSet) throws SQLException {
         while(resultSet.next()) {
             benefitsEmpId.add(resultSet.getInt("emp_id"));
@@ -346,8 +349,6 @@ public class Employee {
         } else {
             this.email.set(index, email);
             System.out.println("Email Change Successful");
-        }
-    }
 
     public void setState(int empID, String state) {
         int index = getIndexOfEmpID(empID);
@@ -461,7 +462,7 @@ public class Employee {
 
         return finalString;
     }
-
+          
     // ! Uncommented when SQL columns are added
     /* public void computeSalary() {
         // Calculates the correct salary by subtracting the cost of health insurance from it.

@@ -17,8 +17,10 @@ public class Group2HrisApplication {
 
 	public static void main(String[] args) throws Exception {
 
+
 		SpringApplication.run(Group2HrisApplication.class, args);
 
+		//read SQL connection/login details from application file
 		BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/application.properties"));
 
 		String url = bufferedReader.readLine();
@@ -36,6 +38,9 @@ public class Group2HrisApplication {
 		Employee stream = new Employee();
 
 		try {
+
+			//Create connection to mySQL server
+
 			Class.forName("com.mysql.cj.jdbc.Driver");
 
 			connection = DriverManager.getConnection(url, user, password);
@@ -43,7 +48,6 @@ public class Group2HrisApplication {
 			System.out.println("Connection Successful");
 
 			Statement statement = connection.createStatement();
-			//grabs employee data from SQL table after connection has been created
 
 			//grabs employee data
 			ResultSet resultSetEmployee = statement.executeQuery("select * from employee");
@@ -53,7 +57,7 @@ public class Group2HrisApplication {
 			ResultSet resultSetPayroll = statement.executeQuery("select * from payroll");
 			stream.readPayroll(resultSetPayroll);
 
-			//grabs benefits data
+			//Grabs benefits data
 			ResultSet resultSetBenefits = statement.executeQuery("select * from benefits");
 			stream.readBenefits(resultSetBenefits);
 
@@ -68,6 +72,9 @@ public class Group2HrisApplication {
 			//Grab health_levels data
 			ResultSet resultSetHealthLev = statement.executeQuery("select * from allowed_health_levels");
 			stream.readHealthLevels(resultSetHealthLev);
+
+			//stream.computeSalary();
+
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -136,7 +143,6 @@ public class Group2HrisApplication {
 		}
 
 		System.out.println("pass");
-
 
 	}
 
