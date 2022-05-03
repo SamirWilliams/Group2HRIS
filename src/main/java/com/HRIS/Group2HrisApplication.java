@@ -16,8 +16,10 @@ public class Group2HrisApplication {
 
 	public static void main(String[] args) throws Exception{
 
+
 		SpringApplication.run(Group2HrisApplication.class, args);
 
+		//read SQL connection/login details from application file
 		BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/application.properties"));
 
 		String url = bufferedReader.readLine();
@@ -29,12 +31,13 @@ public class Group2HrisApplication {
 		String password = bufferedReader.readLine();
 		password = trimString(password);
 
-		Employee myemployee = new Employee();
-
 
 		bufferedReader.close();
 
 		try {
+
+			//Create connection to mySQL server
+
 			Class.forName("com.mysql.cj.jdbc.Driver");
 
 			Connection connection = DriverManager.getConnection(url, user, password);
@@ -42,27 +45,41 @@ public class Group2HrisApplication {
 			System.out.println("Successful");
 
 			Statement statement = connection.createStatement();
-			//grabs employee data from SQL table after connection has been created
 
-			//grabs payroll data
+			Employee stream = new Employee();
+
+			//Grabs employee data from SQL table after connection has been created
+
+			//Grabs payroll data
 			ResultSet resultSetPayroll = statement.executeQuery("select * from payroll");
 
-			Employee grabColumns = new Employee();
-			grabColumns.readPayroll(resultSetPayroll);
+			stream.readPayroll(resultSetPayroll);
 
-			//grabs employee data
+			//Grabs employee data
 			ResultSet resultSetEmployee = statement.executeQuery("select * from employee");
-			grabColumns.readEmployee(resultSetEmployee);
+			stream.readEmployee(resultSetEmployee);
 
-			//grabs benefits data
+			//Grabs benefits data
 			ResultSet resultSetBenefits = statement.executeQuery("select * from benefits");
-			grabColumns.readBenefits(resultSetBenefits);
+			stream.readBenefits(resultSetBenefits);
 
+			//Grabs performance values data
+			ResultSet resultSetPerformanceVal = statement.executeQuery("select * from allowed_performance_values");
+			stream.readPerformanceValues(resultSetPerformanceVal);
+
+			//Grabs company levels data
+			ResultSet resultSetCompanyLev = statement.executeQuery("select * from allowed_company_levels");
+			stream.readCompanyLevels(resultSetCompanyLev);
+
+			//Grab health_levels data
+			ResultSet resultSetHealthLev = statement.executeQuery("select * from allowed_health_levels");
+			stream.readHealthLevels(resultSetHealthLev);
+
+			//stream.computeSalary();
 
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-
 	}
 
 	public static String trimString(String stringToTrim){
