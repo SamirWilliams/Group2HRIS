@@ -33,7 +33,7 @@ public class Group2HrisApplication {
 		bufferedReader.close();
 
 		Connection connection = null;
-		Employee grabColumns = new Employee();
+		Employee stream = new Employee();
 
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -46,16 +46,28 @@ public class Group2HrisApplication {
 			//grabs employee data from SQL table after connection has been created
 
 			//grabs employee data
-			ResultSet resultSetEmployee = statement.executeQuery("select * from actor");
-			grabColumns.readEmployee(resultSetEmployee);
+			ResultSet resultSetEmployee = statement.executeQuery("select * from employee");
+			stream.readEmployee(resultSetEmployee);
 
 			//grabs payroll data
 			ResultSet resultSetPayroll = statement.executeQuery("select * from payroll");
-			grabColumns.readPayroll(resultSetPayroll);
+			stream.readPayroll(resultSetPayroll);
 
 			//grabs benefits data
 			ResultSet resultSetBenefits = statement.executeQuery("select * from benefits");
-			grabColumns.readBenefits(resultSetBenefits);
+			stream.readBenefits(resultSetBenefits);
+
+			//Grabs performance values data
+			ResultSet resultSetPerformanceVal = statement.executeQuery("select * from allowed_performance_values");
+			stream.readPerformanceValues(resultSetPerformanceVal);
+
+			//Grabs company levels data
+			ResultSet resultSetCompanyLev = statement.executeQuery("select * from allowed_company_levels");
+			stream.readCompanyLevels(resultSetCompanyLev);
+
+			//Grab health_levels data
+			ResultSet resultSetHealthLev = statement.executeQuery("select * from allowed_health_levels");
+			stream.readHealthLevels(resultSetHealthLev);
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -76,7 +88,7 @@ public class Group2HrisApplication {
 			if (empID == 0){
 				System.exit(0);
 			}
-			empIDCheck = employeeValidation(grabColumns, empID);
+			empIDCheck = employeeValidation(stream, empID);
 			if (empID < 1 || !empIDCheck) {
 				System.out.println("Invalid ID");
 			}
@@ -142,31 +154,6 @@ public class Group2HrisApplication {
 				return true;
 			}
 		} catch (Exception e){
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	//TODO Replace with new employee validation method that uses employee class
-	//Checks connected database for given empID
-	public static boolean employeeValidation(Connection connection, int empID) {
-		String selectString = "select emp_id from employee where emp_id = " + empID;
-		try{
-			PreparedStatement selectStatement = connection.prepareStatement(selectString);
-			ResultSet resultSet = selectStatement.executeQuery();
-			//If resultSet is empty returns false
-			if (!resultSet.isBeforeFirst()){
-				return false;
-			}else {
-				//iterates through the resultSet to check if empID exists,
-				while (resultSet.next()){
-					//Returns true if empID is found within the resultSet
-					if (resultSet.getInt("emp_id") == empID){
-						return true;
-					}
-				}
-			}
-		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
