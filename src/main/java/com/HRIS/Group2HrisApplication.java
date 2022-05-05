@@ -73,8 +73,7 @@ public class Group2HrisApplication {
 			ResultSet resultSetHealthLev = statement.executeQuery("select * from allowed_health_levels");
 			stream.readHealthLevels(resultSetHealthLev);
 
-			//stream.computeSalary();
-
+			stream.computeSalary();
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -188,7 +187,6 @@ public class Group2HrisApplication {
 		}
 		return false;
 	}
-
 
 }
 
