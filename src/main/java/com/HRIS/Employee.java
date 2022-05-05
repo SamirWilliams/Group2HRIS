@@ -18,11 +18,14 @@ public class Employee {
     private ArrayList<String> state= new ArrayList<String>();
     private ArrayList<Integer> inTraining = new ArrayList<Integer>();
     private ArrayList<Integer> performance = new ArrayList<Integer>();
+    private ArrayList<Integer> levelInCompany = new ArrayList<Integer>();
+    private ArrayList<Integer> inManagement = new ArrayList<Integer>();
+    private ArrayList<String> startDate = new ArrayList<String>();
 
     //allowed_health_levels table
     private ArrayList<Integer> healthLevels = new ArrayList<Integer>();
-    private ArrayList<Double> healthInsuranceCost = new ArrayList<Double>();
-    private ArrayList<String> providerName = new ArrayList<String>();
+    private ArrayList<Double> cost = new ArrayList<Double>();
+
 
     //allowed_performance_values table
     private ArrayList<Integer> performanceRank = new ArrayList<Integer>();
@@ -33,7 +36,10 @@ public class Employee {
     //payroll table
     private ArrayList<Integer> payrollEmpId = new ArrayList<Integer>();
     private ArrayList<Double> salary = new ArrayList<Double>();
-    private ArrayList<Double> updatedSalary = new ArrayList<>();
+    private ArrayList<Integer> hoursWorked = new ArrayList<Integer>();
+    private ArrayList<Double> rate = new ArrayList<Double>();
+    private ArrayList<Double> updatedSalary = new ArrayList<Double>();
+
     //benefits table
     private ArrayList<Integer> benefitsEmpId = new ArrayList<Integer>();
     private ArrayList<Integer> vacationLeave  = new ArrayList<Integer>();
@@ -46,6 +52,8 @@ public class Employee {
         while (resultSet.next()){
             payrollEmpId.add(resultSet.getInt("emp_id"));
             salary.add(resultSet.getDouble("salary"));
+            hoursWorked.add(resultSet.getInt("hours_worked"));
+            rate.add(resultSet.getDouble("rate"));
 
         }
     }
@@ -62,6 +70,9 @@ public class Employee {
             state.add(resultSet.getString("state"));
             inTraining.add(resultSet.getInt("in_training"));
             performance.add(resultSet.getInt("performance"));
+            levelInCompany.add(resultSet.getInt("level_in_company"));
+            inManagement.add(resultSet.getInt("in_management"));
+            startDate.add(resultSet.getString("start_date"));
         }
     }
 
@@ -89,14 +100,13 @@ public class Employee {
 
     public void readHealthLevels(ResultSet resultSet) throws SQLException {
         while(resultSet.next()) {
-            // ! update when sql names are changed or table is updated in actual database.
             healthLevels.add(resultSet.getInt("health_levels"));
-            //healthInsuranceCost.add(resultSet.getDouble("insurance_copay"));
+            cost.add(resultSet.getDouble("cost"));
 
         }
     }
 
-    //checks emp_id list for given id, returns index of id in the ArrayList, returns -1 if not found
+    //checks empID list for given id, returns index of id in the ArrayList, returns -1 if not found
     public int getIndexOfEmpID(int idToCheck){
         return this.empId.indexOf(idToCheck);
     }
@@ -108,29 +118,29 @@ public class Employee {
         return empId;
     }
 
-    //gets single element from emp_id based on given empID's index
+    //gets single element from empID based on given empID's index
     public int getEmpID(int empID) {
         int index = getIndexOfEmpID(empID);
         return this.empId.get(index);
     }
 
-    //gets entire first_name list
+    //gets entire firstName list
     public ArrayList<String> getFirstName() {
         return firstName;
     }
 
-    //gets single element from first_name based on given empID's index
+    //gets single element from firstName based on given empID's index
     public String getFirstName(int empID) {
         int index = getIndexOfEmpID(empID);
         return this.firstName.get(index);
     }
 
-    //gets entire last_name list
+    //gets entire lastName list
     public ArrayList<String> getLastName() {
         return lastName;
     }
 
-    //gets single element from last_name based on given empID's index
+    //gets single element from lastName based on given empID's index
     public String getLastName(int empID) {
         int index = getIndexOfEmpID(empID);
         return this.lastName.get(index);
@@ -147,12 +157,12 @@ public class Employee {
         return this.email.get(index);
     }
 
-    //gets entire date_of_birth list
+    //gets entire dateOfBirth list
     public ArrayList<String> getDateOfBirth() {
         return dateOfBirth;
     }
 
-    //gets single element from date_of_birth based on given empID's index
+    //gets single element from dateOfBirth based on given empID's index
     public String getDateOfBirth(int empID) {
         int index = getIndexOfEmpID(empID);
         return this.dateOfBirth.get(index);
@@ -191,7 +201,7 @@ public class Employee {
         return this.state.get(index);
     }
 
-    //gets entire in_training list
+    //gets entire inTraining list
     public ArrayList<Integer> getInTraining() {
         return inTraining;
     }
@@ -213,24 +223,52 @@ public class Employee {
         return this.performance.get(index);
     }
 
+    //gets entire levelInCompany list
+    public ArrayList<Integer> getLevelInCompany() {
+        return levelInCompany;
+    }
+
+    //gets single element from levelinCompany based on given levelInCompany index
+    public int getLevelInCompany(int empID) {
+        int index = getIndexOfEmpID(empID);
+        return this.levelInCompany.get(index);
+    }
+
+    //gets entire inManagement list
+    public ArrayList<Integer> getInManagement() {
+        return inManagement;
+    }
+
+    //gets single element from inManagement based on given inManagement index
+    public int getInManagement(int empID) {
+        int index = getIndexOfEmpID(empID);
+        return this.inManagement.get(index);
+    }
+
+    //gets entire startDate list
+    public ArrayList<String> getStartDate() {
+        return startDate;
+    }
+
+    //gets single element from startDate based on given startDate index
+    public String getStartDate(int empID) {
+        int index = getIndexOfEmpID(empID);
+        return this.startDate.get(index);
+    }
+
     //allowed_health_levels table getters
     //gets entire health_levels list
     public ArrayList<Integer> getHealthLevels() {
         return healthLevels;
     }
 
-    //gets entire insurance_cost list
-    public ArrayList<Double> getInsuranceCost() {
-        return healthInsuranceCost;
-    }
-
-    //gets entire provider_name list
-    public ArrayList<String> getProviderName() {
-        return providerName;
+    //gets entire cost list
+    public ArrayList<Double> getCost() {
+        return cost;
     }
 
     //allowed_performance_values table getters
-    //gets entire performance_rank list
+    //gets entire performanceRank list
     public ArrayList<Integer> getPerformanceRank() {
         return performanceRank;
     }
@@ -247,7 +285,7 @@ public class Employee {
         return payrollEmpId;
     }
 
-    //gets single element from payroll_emp_id based on given empID's index
+    //gets single element from payrollEmpId based on given empID's index
     public int getPayrollEmpID(int empID) {
         int index = getIndexOfEmpID(empID);
         return this.payrollEmpId.get(index);
@@ -262,6 +300,39 @@ public class Employee {
     public double getSalary(int empID) {
         int index = getIndexOfEmpID(empID);
         return this.salary.get(index);
+    }
+
+    //gets entire hoursWorked list
+    public ArrayList<Integer> getHoursWorked() {
+        return hoursWorked;
+    }
+
+    //gets single element from hoursWorked based on given empID's index
+    public double getHoursWorked(int empID) {
+        int index = getIndexOfEmpID(empID);
+        return this.hoursWorked.get(index);
+    }
+
+    //gets entire rate list
+    public ArrayList<Double> getRate() {
+        return rate;
+    }
+
+    //gets single element from rate based on given empID's index
+    public double getRate(int empID) {
+        int index = getIndexOfEmpID(empID);
+        return this.rate.get(index);
+    }
+
+    //gets entire updatedSalary list
+    public ArrayList<Double> getUpdatedSalary() {
+        return rate;
+    }
+
+    //gets single element from updatedSalary based on given empID's index
+    public double getUpdatedSalary(int empID) {
+        int index = getIndexOfEmpID(empID);
+        return this.updatedSalary.get(index);
     }
 
     //benefits table getters
@@ -287,34 +358,34 @@ public class Employee {
         return this.vacationLeave.get(index);
     }
 
-    //gets entire sick_leave list
+    //gets entire sickLeave list
     public ArrayList<Integer> getSickLeave() {
         return sickLeave;
     }
 
-    //gets single element from sick_leave based on given empID's index
+    //gets single element from sickLeave based on given empID's index
     public int getSickLeave(int empID) {
         int index = getIndexOfEmpID(empID);
         return this.sickLeave.get(index);
     }
 
-    //gets entire paid_leave list
+    //gets entire paidLeave list
     public ArrayList<Integer> getPaidLeave() {
         return paidLeave;
     }
 
-    //gets single element from paid_leave based on given empID's index
+    //gets single element from paidLeave based on given empID's index
     public int getPaidLeave(int empID) {
         int index = getIndexOfEmpID(empID);
         return this.paidLeave.get(index);
     }
 
-    //gets entire health_insurance list
+    //gets entire healthInsurance list
     public ArrayList<Integer> getHealthInsurance() {
         return healthInsurance;
     }
 
-    //gets single element from health_insurance based on given empID's index
+    //gets single element from healthInsurance based on given empID's index
     public int getHealthInsurance(int empID) {
         int index = getIndexOfEmpID(empID);
         return this.healthInsurance.get(index);
@@ -443,6 +514,25 @@ public class Employee {
         }
     }
 
+    public void setLevelInCompany(int empID, int levelInCompany) {
+        int index = getIndexOfEmpID(empID);
+        if (index == -1){
+            System.out.println("Employee Not Found");
+        } else {
+            this.levelInCompany.set(index, levelInCompany);
+            System.out.println("Level in Company Change Successful");
+        }
+    }
+
+    public void setStartDate(int empID, String startDate) {
+        int index = getIndexOfEmpID(empID);
+        if (index == -1){
+            System.out.println("Employee Not Found");
+        } else {
+            this.startDate.set(index, startDate);
+            System.out.println("Start date Change Successful");
+        }
+    }
     //Returns the data for a single employee based on the given employee ID
     public String getSingleEmployee(int empID) {
         String finalString = "";
@@ -465,19 +555,27 @@ public class Employee {
         return finalString;
     }
           
-    // ! Uncommented when SQL columns are added
-    /* public void computeSalary() {
+
+    public void computeSalary() {
         // Calculates the correct salary by subtracting the cost of health insurance from it.
-        try {
-            for (int salaryLoop = 0; salaryLoop < salary.size(); salaryLoop++) {
-                double calculatedSalary = salary.get(salaryLoop) - healthInsuranceCost.get(salaryLoop);
-                updatedSalary.add(calculatedSalary);
+
+        for (int empIdLoop = 0; empIdLoop < empId.size(); empIdLoop++) {
+            double indivSalary = 0;
+            double indivInsuranceCost = 0;
+
+            // ! check if salary is not null or this could cause an error
+            indivSalary = salary.get(empIdLoop);
+
+            //Find the cost of each employees health insurance
+            for(int costFinder = 0; costFinder < healthLevels.size(); costFinder++) {
+                //See if there is match in of the level of health insurance in the arrays/columns
+                boolean match = healthLevels.get(costFinder).equals(healthInsurance.get(empIdLoop));
+                if(match) {
+                    indivInsuranceCost = cost.get(costFinder);
+                };
             }
+            //append the updated salary
+            updatedSalary.add(indivSalary - indivInsuranceCost);
         }
-        catch(Exception e) {
-            e.printStackTrace();
-            System.out.println("ERROR! Salary column and health insurance cost column have two different sizes");
-            }
     }
-     */
 }
