@@ -4,6 +4,7 @@ import org.springframework.data.relational.core.sql.In;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class Employee {
 
@@ -47,63 +48,131 @@ public class Employee {
     private ArrayList<Integer> paidLeave  = new ArrayList<Integer>();
     private ArrayList<Integer> healthInsurance  = new ArrayList<Integer>();
 
-    public void readPayroll(ResultSet resultSet) throws SQLException {
+    public void readPayroll(Statement statement) throws SQLException {
+        // ! Passed statement instead of resultSet
+
         //grab emp_id and salary columns from payroll table, adds them to their respective arraylists
-        while (resultSet.next()){
-            payrollEmpId.add(resultSet.getInt("emp_id"));
-            salary.add(resultSet.getDouble("salary"));
-            hoursWorked.add(resultSet.getInt("hours_worked"));
-            rate.add(resultSet.getDouble("rate"));
+        ResultSet resultSetPayroll = statement.executeQuery("select * from payroll");
+
+        while (resultSetPayroll.next()){
+            payrollEmpId.add(resultSetPayroll.getInt("emp_id"));
+            salary.add(resultSetPayroll.getDouble("salary"));
+            hoursWorked.add(resultSetPayroll.getInt("hours_worked"));
+            rate.add(resultSetPayroll.getDouble("rate"));
 
         }
     }
 
-    public void readEmployee(ResultSet resultSet) throws SQLException {
-        while (resultSet.next()) {
-            empId.add(resultSet.getInt("emp_id"));
-            firstName.add(resultSet.getString("first_name"));
-            lastName.add(resultSet.getString("last_name"));
-            email.add(resultSet.getString("email"));
-            dateOfBirth.add(resultSet.getString("date_of_birth"));
-            role.add(resultSet.getString("role"));
-            address.add(resultSet.getString("state"));
-            state.add(resultSet.getString("state"));
-            inTraining.add(resultSet.getInt("in_training"));
-            performance.add(resultSet.getInt("performance"));
-            levelInCompany.add(resultSet.getInt("level_in_company"));
-            inManagement.add(resultSet.getInt("in_management"));
-            startDate.add(resultSet.getString("start_date"));
+    public void clearPayroll() {
+        payrollEmpId.clear();
+        salary.clear();
+        hoursWorked.clear();
+        rate.clear();
+    }
+
+    public void readEmployee(Statement statement) throws SQLException {
+
+        ResultSet resultSetEmployee = statement.executeQuery("select * from employee");
+
+        while (resultSetEmployee.next()) {
+            empId.add(resultSetEmployee.getInt("emp_id"));
+            firstName.add(resultSetEmployee.getString("first_name"));
+            lastName.add(resultSetEmployee.getString("last_name"));
+            email.add(resultSetEmployee.getString("email"));
+            dateOfBirth.add(resultSetEmployee.getString("date_of_birth"));
+            role.add(resultSetEmployee.getString("role"));
+            address.add(resultSetEmployee.getString("state"));
+            state.add(resultSetEmployee.getString("state"));
+            inTraining.add(resultSetEmployee.getInt("in_training"));
+            performance.add(resultSetEmployee.getInt("performance"));
+            levelInCompany.add(resultSetEmployee.getInt("level_in_company"));
+            inManagement.add(resultSetEmployee.getInt("in_management"));
+            startDate.add(resultSetEmployee.getString("start_date"));
+        }
+
+    }
+    public void clearEmployees() {
+        empId.clear();
+        firstName.clear();
+        lastName.clear();
+        email.clear();
+        dateOfBirth.clear();
+        role.clear();
+        address.clear();
+        state.clear();
+        inTraining.clear();
+        performance.clear();
+        levelInCompany.clear();
+        inManagement.clear();
+        startDate.clear();
+    }
+
+    public void readBenefits(Statement statement) throws SQLException {
+        ResultSet resultSetBenefits = statement.executeQuery("select * from benefits");
+
+        while(resultSetBenefits.next()) {
+            benefitsEmpId.add(resultSetBenefits.getInt("emp_id"));
+            vacationLeave.add(resultSetBenefits.getInt("vacation_leave"));
+            sickLeave.add(resultSetBenefits.getInt("sick_leave"));
+            paidLeave.add(resultSetBenefits.getInt("paid_leave"));
+            healthInsurance.add(resultSetBenefits.getInt("health_insurance"));
         }
     }
 
-    public void readBenefits(ResultSet resultSet) throws SQLException {
-        while(resultSet.next()) {
-            benefitsEmpId.add(resultSet.getInt("emp_id"));
-            vacationLeave.add(resultSet.getInt("vacation_leave"));
-            sickLeave.add(resultSet.getInt("sick_leave"));
-            paidLeave.add(resultSet.getInt("paid_leave"));
-            healthInsurance.add(resultSet.getInt("health_insurance"));
+    public void clearBenefits() {
+        benefitsEmpId.clear();
+        vacationLeave.clear();
+        sickLeave.clear();
+        paidLeave.clear();
+        healthInsurance.clear();
+    }
+
+    public void readPerformanceValues(Statement statement) throws SQLException {
+        ResultSet resultSetPerformanceVal = statement.executeQuery("select * from allowed_performance_values");
+
+        while(resultSetPerformanceVal.next()) {
+            performanceRank.add(resultSetPerformanceVal.getInt("performance_rank"));
         }
     }
 
-    public void readPerformanceValues(ResultSet resultSet) throws SQLException {
-        while(resultSet.next()) {
-            performanceRank.add(resultSet.getInt("performance_rank"));
+    public void clearPerformanceValues() {
+        performanceRank.clear();
+    }
+
+    public void readCompanyLevels(Statement statement) throws SQLException {
+        ResultSet resultSetCompanyLev = statement.executeQuery("select * from allowed_company_levels");
+
+        while(resultSetCompanyLev.next()) {
+            companyLevels.add(resultSetCompanyLev.getInt("company_levels"));
         }
     }
 
-    public void readCompanyLevels(ResultSet resultSet) throws SQLException {
-        while(resultSet.next()) {
-            companyLevels.add(resultSet.getInt("company_levels"));
+    public void clearCompanyLevels() {
+        companyLevels.clear();
+    }
+
+    public void readHealthLevels(Statement statement) throws SQLException {
+        ResultSet resultSetHealthLev = statement.executeQuery("select * from allowed_health_levels");
+
+        while(resultSetHealthLev.next()) {
+            healthLevels.add(resultSetHealthLev.getInt("health_levels"));
+            cost.add(resultSetHealthLev.getDouble("cost"));
+
         }
     }
 
-    public void readHealthLevels(ResultSet resultSet) throws SQLException {
-        while(resultSet.next()) {
-            healthLevels.add(resultSet.getInt("health_levels"));
-            cost.add(resultSet.getDouble("cost"));
+    public void clearHealthLevels() {
+        healthLevels.clear();
+        cost.clear();
+    }
 
-        }
+    public void clearAll() {
+        clearPayroll();
+        clearEmployees();
+        clearBenefits();
+        clearCompanyLevels();
+        clearHealthLevels();
+        clearPerformanceValues();
     }
 
     //checks empID list for given id, returns index of id in the ArrayList, returns -1 if not found
@@ -554,7 +623,7 @@ public class Employee {
 
         return finalString;
     }
-          
+
 
     public void computeSalary() {
         // Calculates the correct salary by subtracting the cost of health insurance from it.
