@@ -6,16 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.TreeSet;
 
 @SpringBootApplication
 public class Group2HrisApplication {
 
 	public static void main(String[] args) throws Exception {
-
 
 		SpringApplication.run(Group2HrisApplication.class, args);
 
@@ -49,28 +45,22 @@ public class Group2HrisApplication {
 			Statement statement = connection.createStatement();
 
 			//grabs employee data
-			ResultSet resultSetEmployee = statement.executeQuery("select * from employee");
-			stream.readEmployee(resultSetEmployee);
+			stream.readEmployee(statement);
 
 			//grabs payroll data
-			ResultSet resultSetPayroll = statement.executeQuery("select * from payroll");
-			stream.readPayroll(resultSetPayroll);
+			stream.readPayroll(statement);
 
 			//Grabs benefits data
-			ResultSet resultSetBenefits = statement.executeQuery("select * from benefits");
-			stream.readBenefits(resultSetBenefits);
+			stream.readBenefits(statement);
 
 			//Grabs performance values data
-			ResultSet resultSetPerformanceVal = statement.executeQuery("select * from allowed_performance_values");
-			stream.readPerformanceValues(resultSetPerformanceVal);
+			stream.readPerformanceValues(statement);
 
 			//Grabs company levels data
-			ResultSet resultSetCompanyLev = statement.executeQuery("select * from allowed_company_levels");
-			stream.readCompanyLevels(resultSetCompanyLev);
+			stream.readCompanyLevels(statement);
 
 			//Grab health_levels data
-			ResultSet resultSetHealthLev = statement.executeQuery("select * from allowed_health_levels");
-			stream.readHealthLevels(resultSetHealthLev);
+			stream.readHealthLevels(statement);
 
 			stream.computeSalary();
 
@@ -203,16 +193,13 @@ public class Group2HrisApplication {
 					Statement statement = connection.createStatement();
 
 					//grabs employee data
-					ResultSet resultSetEmployee = statement.executeQuery("select * from employee");
-					stream.readEmployee(resultSetEmployee);
+					stream.readEmployee(statement);
 
 					//grabs payroll data
-					ResultSet resultSetPayroll = statement.executeQuery("select * from payroll");
-					stream.readPayroll(resultSetPayroll);
+					stream.readPayroll(statement);
 
 					//Grabs benefits data
-					ResultSet resultSetBenefits = statement.executeQuery("select * from benefits");
-					stream.readBenefits(resultSetBenefits);
+					stream.readBenefits(statement);
 
 					stream.computeSalary();
 					pressEnterKeyToContinue();
