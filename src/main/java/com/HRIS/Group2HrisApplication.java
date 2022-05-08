@@ -5,12 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.TreeSet;
 
 @SpringBootApplication
 public class Group2HrisApplication {
@@ -73,8 +72,7 @@ public class Group2HrisApplication {
 			ResultSet resultSetHealthLev = statement.executeQuery("select * from allowed_health_levels");
 			stream.readHealthLevels(resultSetHealthLev);
 
-			//stream.computeSalary();
-
+			stream.computeSalary();
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -83,66 +81,37 @@ public class Group2HrisApplication {
 		Scanner input = new Scanner(System.in);
 
 		int empID = -1;
-		boolean empIDCheck;
+		boolean empIDCheck = false;
 
 		do {
 			System.out.print("Enter Employee ID or Enter 0 to Exit Program: ");
 			try {
-				empID = input.nextInt();
+				empID = Integer.parseInt(input.nextLine());
+				if (empID == 0){
+					System.exit(0);
+				}
+				empIDCheck = employeeValidation(stream, empID);
+				if (empID < 1 || !empIDCheck) {
+					System.out.println("Invalid ID");
+				}
 			} catch (Exception e) {
 				System.out.println("Invalid Choice");
-			}
-			if (empID == 0){
-				System.exit(0);
-			}
-			empIDCheck = employeeValidation(stream, empID);
-			if (empID < 1 || !empIDCheck) {
-				System.out.println("Invalid ID");
 			}
 		} while (!empIDCheck);
 
 		int menuChoice = -1;
+		boolean managementCheck = managementCheck(stream, empID);
 
 		//TODO Menu System
-		if (managementCheck(connection, empID)){
+		if (managementCheck == true){
 			//TODO Management Menu
-			do {
-				System.out.println("Make a Selection: ");
-				System.out.println("[1] List All Employees");
-				System.out.println("[2] List Specific Role");
-				System.out.println("[3] List Specific Employee");
-				System.out.println("[4] Add Employee");
-				System.out.println("[5] Generate Payroll");
-				System.out.println("[0] Exit");
-				try {
-					menuChoice = input.nextInt();
-				} catch (Exception e) {
-					System.out.println("Invalid Choice");
-				}
-				if (menuChoice < 0 || menuChoice > 5) {
-					System.out.println("Invalid Choice");
-				}
-			} while (menuChoice != 0);
+			managementMenu(stream, connection);
 		} else {
 			//TODO Employee Menu
-			do {
-				System.out.println("Make a Selection: ");
-				System.out.println("[1] List PTO");
-				System.out.println("[2] List Current Salary");
-				System.out.println("[3] List Your Information");
-				System.out.println("[0] Exit");
-				try {
-					menuChoice = input.nextInt();
-				} catch (Exception e) {
-					System.out.println("Invalid Choice");
-				}
-				if (menuChoice < 0 || menuChoice > 3) {
-					System.out.println("Invalid Choice");
-				}
-			} while (menuChoice != 0);
+			employeeMenu(stream);
 		}
 
-		System.out.println("pass");
+		System.out.println("End of Program");
 
 	}
 
@@ -154,7 +123,7 @@ public class Group2HrisApplication {
 	}
 
 	//Check if given empID is in the employee database
-	public static boolean employeeValidation(Employee employeeList, int empID) throws Exception {
+	public static boolean employeeValidation(Employee employeeList, int empID) {
 		try {
 			if (employeeList.getEmpID().contains(empID)){
 				return true;
@@ -165,30 +134,133 @@ public class Group2HrisApplication {
 		return false;
 	}
 
-	//TODO Replace with new management check method that uses employee class
 	//Checks if given empID is in management
-	public static boolean managementCheck(Connection connection, int empID){
-		String selectString = "select in_management from employee where emp_id = " + empID;
-		try{
-			PreparedStatement selectStatement = connection.prepareStatement(selectString);
-			ResultSet resultSet = selectStatement.executeQuery();
-			//If resultSet is empty returns false
-			if (!resultSet.isBeforeFirst()){
-				return false;
-			}else {
-				if (resultSet.getInt("in_management") == 1){
-					return true;
-				} else {
-					return false;
-				}
-
+	public static boolean managementCheck(Employee employeeList, int empID) {
+		try {
+			if(employeeList.getInManagement(empID) == 1){
+				return true;
 			}
-		} catch (Exception e) {
+		} catch (Exception e){
 			e.printStackTrace();
 		}
 		return false;
 	}
 
+	//Entire Management Menu System
+	public static void managementMenu(Employee stream, Connection connection) throws Exception {
+		int menuChoice = -1;
+		int empID = -1;
+		boolean empIDCheck = false;
+		Scanner input = new Scanner(System.in);
+		do {
+			System.out.println("Make a Selection: ");
+			System.out.println("[1] List All Employees");
+			System.out.println("[2] List Specific Role");
+			System.out.println("[3] List Specific Employee");
+			System.out.println("[4] Add Employee");
+			System.out.println("[5] Generate Payroll");
+			System.out.println("[0] Exit");
+			try {
+				menuChoice = Integer.parseInt(input.nextLine());
+			} catch (Exception e) {
+				System.out.println("Invalid Choice");
+			}
+			if (menuChoice < 0 || menuChoice > 5) {
+				System.out.println("Invalid Choice");
+			}
+			switch (menuChoice){
+				case 1:
+					stream.outputAllEmployees();
+					pressEnterKeyToContinue();
+					break;
+				case 2:
+					stream.listSpecificRole();
+					pressEnterKeyToContinue();
+					break;
+				case 3:
+					do {
+						System.out.print("Enter Employee ID or Enter 0 to go back: ");
+						try {
+							empID = Integer.parseInt(input.nextLine());
+							if (empID == 0){
+								break;
+							}
+							empIDCheck = employeeValidation(stream, empID);
+							if (empID < 1 || !empIDCheck) {
+								System.out.println("Invalid ID");
+							}
+						} catch (Exception e) {
+							System.out.println("Invalid Choice");
+						}
+					} while (!empIDCheck);
+					if (empID != 0){
+						stream.outputSingleEmployee(empID);
+						pressEnterKeyToContinue();
+					}
+					break;
+				case 4:
+					stream.addEmployee(connection);
+					Statement statement = connection.createStatement();
+
+					//grabs employee data
+					ResultSet resultSetEmployee = statement.executeQuery("select * from employee");
+					stream.readEmployee(resultSetEmployee);
+
+					//grabs payroll data
+					ResultSet resultSetPayroll = statement.executeQuery("select * from payroll");
+					stream.readPayroll(resultSetPayroll);
+
+					//Grabs benefits data
+					ResultSet resultSetBenefits = statement.executeQuery("select * from benefits");
+					stream.readBenefits(resultSetBenefits);
+
+					stream.computeSalary();
+					pressEnterKeyToContinue();
+					break;
+				case 5:
+					stream.generatePayroll();
+					pressEnterKeyToContinue();
+					break;
+			}
+		} while (menuChoice != 0);
+	}
+
+	//Entire Normal Employee Menu System
+	public static void employeeMenu(Employee stream){
+		int menuChoice = -1;
+		Scanner input = new Scanner(System.in);
+		do {
+			System.out.println("Make a Selection: ");
+			System.out.println("[1] List PTO");
+			System.out.println("[2] List Current Salary");
+			System.out.println("[3] List Your Information");
+			System.out.println("[0] Exit");
+			try {
+				menuChoice = Integer.parseInt(input.nextLine());
+			} catch (Exception e) {
+				System.out.println("Invalid Choice");
+			}
+			if (menuChoice < 0 || menuChoice > 3) {
+				System.out.println("Invalid Choice");
+			}
+			switch(menuChoice){
+				case 1:
+					break;
+				case 2:
+					break;
+				case 3:
+					break;
+			}
+
+		} while (menuChoice != 0);
+	}
+
+	//Pauses program to get user input to continue
+	private static void pressEnterKeyToContinue() {
+		System.out.println("Press Enter key to continue...");
+		Scanner input = new Scanner(System.in);
+		input.nextLine();
+	}
 
 }
 
