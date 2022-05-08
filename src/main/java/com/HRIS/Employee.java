@@ -1,10 +1,8 @@
 package com.HRIS;
 
-import org.springframework.data.relational.core.sql.In;
-
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class Employee {
 
@@ -106,7 +104,7 @@ public class Employee {
         inManagement.clear();
         startDate.clear();
     }
-
+  
     public void readBenefits(Statement statement) throws SQLException {
         ResultSet resultSetBenefits = statement.executeQuery("select * from benefits");
 
@@ -395,7 +393,7 @@ public class Employee {
 
     //gets entire updatedSalary list
     public ArrayList<Double> getUpdatedSalary() {
-        return rate;
+        return updatedSalary;
     }
 
     //gets single element from updatedSalary based on given empID's index
@@ -599,31 +597,512 @@ public class Employee {
             System.out.println("Employee Not Found");
         } else {
             this.startDate.set(index, startDate);
-            System.out.println("Start date Change Successful");
+            System.out.println("Start Date Change Successful");
         }
     }
-    //Returns the data for a single employee based on the given employee ID
-    public String getSingleEmployee(int empID) {
+
+    //adds a new employee to the database
+    public void addEmployee(Connection connection) throws Exception{
+        Scanner input = new Scanner(System.in);
+
+        //Employee Table Input
+        //Gets user input for new employee first name
+        System.out.print("Please enter employees first name: ");
+        String firstName = input.nextLine();
+
+        //Gets user input for new employee last name
+        System.out.print("Please enter employees last name: ");
+        String lastName = input.nextLine();
+
+        //Gets user input for new employee email
+        System.out.print("Please enter employees email: ");
+        String email = input.nextLine();
+
+        //Gets user input for new employee date of birth
+        System.out.println("Please enter employees date of birth: ");
+        int month = -1;
+        //input validation for month
+        do{
+            try {
+                System.out.print("Month: ");
+                month = Integer.parseInt(input.nextLine());
+                if (month < 1 || month > 12){
+                    System.out.println("Please enter a number from 1-12.");
+                }
+            } catch (Exception e){
+                System.out.println("Invalid Choice");
+            }
+        } while (month < 1 || month > 12);
+
+        int day = -1;
+        //input validation for day
+        do{
+            try {
+                System.out.print("Day: ");
+                day = Integer.parseInt(input.nextLine());
+                if (day < 1 || day > 31){
+                    System.out.println("Please enter a number from 1-31.");
+                }
+            } catch (Exception e){
+                System.out.println("Invalid Choice");
+            }
+        } while (day < 1 || day > 31);
+
+        int year = -1;
+        //input validation for year
+        do{
+            try {
+                System.out.print("Year: ");
+                year = Integer.parseInt(input.nextLine());
+                if (year < 1800 || year > Calendar.getInstance().get(Calendar.YEAR)){
+                    System.out.println("Please enter a number from 1800-" + Calendar.getInstance().get(Calendar.YEAR) + ".");
+                }
+            } catch (Exception e){
+                System.out.println("Invalid Choice");
+            }
+        } while (year < 1800 || year > Calendar.getInstance().get(Calendar.YEAR));
+
+        String dateOfBirth = "";
+        if (day < 10 && month < 10){
+            dateOfBirth = year + "-0" + month + "-0" + day;
+        } else if (day < 10 && month > 10){
+            dateOfBirth = year + "-" + month + "-0" + day;
+        } else if (day > 10 && month < 10){
+            dateOfBirth = year + "-0" + month + "-" + day;
+        } else {
+            dateOfBirth = year + "-" + month + "-" + day;
+        }
+
+        //Gets user input for new employee role
+        System.out.print("Please enter employees role: ");
+        String role = input.nextLine();
+
+        //Gets user input for new employee address
+        System.out.print("Please enter employees address: ");
+        String address = input.nextLine();
+
+        //Gets user input for new employee state
+        String state = "";
+        //input validation for state
+        do {
+            try {
+                System.out.print("Please enter employees state ex.\"NC\", \"TX\", \"CA\": ");
+                state = input.next("[A-Za-z][A-Za-z]");
+                if (state.length() != 2){
+                    System.out.println("Please use the states 2 character abbreviation.");
+                }
+            } catch (Exception e){
+                System.out.println("Please use the states 2 character abbreviation.");
+                input.nextLine();
+            }
+        } while (state.length() != 2);
+        state = state.toUpperCase();
+        //catches extra newline character from previous user input
+        input.nextLine();
+
+        //Gets user input for new employee training status
+        String inTrainingChoice;
+        int inTraining;
+        //input validation for training status
+        do {
+            System.out.print("Are they in training? [Yes]/[No]: ");
+            inTrainingChoice = input.nextLine().trim().toLowerCase();
+            if (inTrainingChoice.equalsIgnoreCase("yes")){
+                inTraining = 1;
+                break;
+            } else if (inTrainingChoice.equalsIgnoreCase("no")){
+                inTraining = 0;
+                break;
+            } else {
+                System.out.println("Please enter Yes or No.");
+            }
+        } while (true);
+
+        //Gets user input for new employee performance rating
+        int performance = -1;
+        //input validation for performance ranking
+        do{
+            try {
+                System.out.print("Please choose performance ranking [1-10]: ");
+                performance = Integer.parseInt(input.nextLine());
+                if (performance < 1 || performance > 10){
+                    System.out.println("Please enter a number from 1-10.");
+                }
+            } catch (Exception e){
+                System.out.println("Invalid Choice");
+            }
+        } while (performance < 1 || performance > 10);
+
+        //Gets user input for new employee company level
+        int levelInCompany = -1;
+        //input validation for company level
+        do{
+            try {
+                System.out.print("Please choose level in company [1-5]: ");
+                levelInCompany = Integer.parseInt(input.nextLine());
+                if (levelInCompany < 1 || levelInCompany > 5){
+                    System.out.println("Please enter a number from 1-5.");
+                }
+            } catch (Exception e){
+                System.out.println("Invalid Choice");
+            }
+        } while (levelInCompany < 1 || levelInCompany > 5);
+
+        //Gets user input for new employee management status
+        String inManagementChoice;
+        int inManagement;
+        //input validation for management status
+        do {
+            System.out.print("Are they in management? [Yes]/[No]: ");
+            inManagementChoice = input.nextLine().trim().toLowerCase();
+            if (inManagementChoice.equalsIgnoreCase("yes")){
+                inManagement = 1;
+                break;
+            } else if (inManagementChoice.equalsIgnoreCase("no")){
+                inManagement = 0;
+                break;
+            } else {
+                System.out.println("Please enter Yes or No.");
+            }
+        } while (true);
+
+        //Payroll Table Input
+        /*Asks user whether they want to enter new employees Yearly Salary or Hourly Rate then
+        Automatically generates information for the other option based on users choice and input */
+        int salaryChoice = -1;
+        do{
+            System.out.println("Would you like to enter Yearly Salary or Hourly Rate?");
+            System.out.println("[1] Yearly Salary");
+            System.out.println("[2] Hourly Rate");
+            try {
+                salaryChoice = Integer.parseInt(input.nextLine());
+                if (salaryChoice < 1|| salaryChoice > 2){
+                    System.out.println("Please enter 1 or 2.");
+                }
+            } catch (Exception e){
+                System.out.println("Invalid Choice");
+            }
+        } while (salaryChoice < 1|| salaryChoice > 2);
+
+        double salary = -1;
+        double rate = -1;
+
+        if (salaryChoice == 1){
+            /*Gets user input for new employee yearly salary
+            input validation for yearly salary*/
+            do{
+                try {
+                    System.out.print("Please enter employees yearly salary: ");
+                    salary = Double.parseDouble(input.nextLine());
+                    if (salary < 15080|| salary > 9999999.99){
+                        System.out.println("Please enter a number from at least 15080.");
+                    }
+                } catch (Exception e){
+                    System.out.println("Invalid Choice");
+                }
+            } while (salary < 15080 || salary > 9999999.99);
+
+            rate = salary / (40 * 52);
+            DecimalFormat df = new DecimalFormat("#.00");
+            rate = Double.parseDouble(df.format(rate));
+
+        } else {
+            /*Gets user input for new employee hourly rate
+            input validation for hourly rate*/
+            do{
+                try {
+                    System.out.print("Please enter employees hourly rate: ");
+                    rate = Double.parseDouble(input.nextLine());
+                    if (rate < 7.25 || rate > 999.99){
+                        System.out.println("Please enter a number from at least 7.25.");
+                    }
+                } catch (Exception e){
+                    System.out.println("Invalid Choice");
+                }
+            } while (rate < 7.25 || rate > 999.99);
+
+            salary = rate * (40 * 52);
+            DecimalFormat df = new DecimalFormat("#.00");
+            salary = Double.parseDouble(df.format(salary));
+
+        }
+
+        //Gets user input for new employee hours worked
+        int hoursWorked = -1;
+        //input validation for hours worked
+        do{
+            try {
+                System.out.print("Please enter employees weekly hours worked: ");
+                hoursWorked = Integer.parseInt(input.nextLine());
+                if (hoursWorked < 1 || hoursWorked > 80){
+                    System.out.println("Please enter a number from 1-80.");
+                }
+            } catch (Exception e){
+                System.out.println("Invalid Choice");
+            }
+        } while (hoursWorked < 1 || hoursWorked > 80);
+
+        //Benefits Table Input
+        //Gets user input for new employee vacation leave
+        int vacationLeave = -1;
+        //input validation for vacation leave
+        do{
+            try {
+                System.out.print("Please enter vacation leave amount [0-25]: ");
+                vacationLeave = Integer.parseInt(input.nextLine());
+                if (vacationLeave < 0 || vacationLeave > 25){
+                    System.out.println("Please enter a number from 0-25.");
+                }
+            } catch (Exception e){
+                System.out.println("Invalid Choice");
+            }
+        } while (vacationLeave < 0 || vacationLeave > 25);
+
+        //Gets user input for new employee sick leave
+        int sickLeave = -1;
+        //input validation for sick leave
+        do{
+            try {
+                System.out.print("Please enter sick leave amount [0-20]: ");
+                sickLeave = Integer.parseInt(input.nextLine());
+                if (sickLeave < 0 || sickLeave > 20){
+                    System.out.println("Please enter a number from 0-20.");
+                }
+            } catch (Exception e){
+                System.out.println("Invalid Choice");
+            }
+        } while (sickLeave < 0 || sickLeave > 20);
+
+        //Gets user input for new employee paid leave
+        int paidLeave = -1;
+        //input validation for paid leave
+        do{
+            try {
+                System.out.print("Please enter paid leave amount [0-10]: ");
+                paidLeave = Integer.parseInt(input.nextLine());
+                if (paidLeave < 0 || paidLeave > 10){
+                    System.out.println("Please enter a number from 0-10.");
+                }
+            } catch (Exception e){
+                System.out.println("Invalid Choice");
+            }
+        } while (paidLeave < 0 || paidLeave > 10);
+
+        //Gets user input for new employee health insurance level
+        int healthInsurance = -1;
+        //input validation for health insurance level
+        do{
+            try {
+                System.out.print("Please enter health insurance level [0-5]: ");
+                healthInsurance = Integer.parseInt(input.nextLine());
+                if (healthInsurance < 0 || healthInsurance > 5){
+                    System.out.println("Please enter a number from 0-5.");
+                }
+            } catch (Exception e){
+                System.out.println("Invalid Choice");
+            }
+        } while (healthInsurance < 0 || healthInsurance > 5);
+
+        //adds new employee data to the employee table
+        boolean addEmployeeCheck;
+        String addEmployeeString = "INSERT INTO employee(emp_id, first_name, last_name, email, date_of_birth, role, " +
+                "address, state, in_training, performance, level_in_company, in_management) " +
+                "VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        try {
+            PreparedStatement addEmployee = connection.prepareStatement(addEmployeeString);
+            addEmployee.setInt(1, this.empId.size() + 1);
+            addEmployee.setString(2, firstName);
+            addEmployee.setString(3, lastName);
+            addEmployee.setString(4, email);
+            addEmployee.setString(5, dateOfBirth);
+            addEmployee.setString(6, role);
+            addEmployee.setString(7, address);
+            addEmployee.setString(8, state);
+            addEmployee.setInt(9, inTraining);
+            addEmployee.setInt(10, performance);
+            addEmployee.setInt(11, levelInCompany);
+            addEmployee.setInt(12, inManagement);
+            addEmployee.executeUpdate();
+            addEmployeeCheck = true;
+        }catch (Exception e){
+            e.printStackTrace();
+            addEmployeeCheck = false;
+        }
+
+        //adds new employee data to the payroll table
+        boolean addPayrollCheck;
+        String addPayrollString = "INSERT INTO payroll(emp_id, salary, hours_worked, rate) VALUES (?, ?, ?, ?);";
+
+        try {
+            PreparedStatement addPayroll = connection.prepareStatement(addPayrollString);
+            addPayroll.setInt(1, this.empId.size() + 1);
+            addPayroll.setDouble(2, salary);
+            addPayroll.setInt(3, hoursWorked);
+            addPayroll.setDouble(4, rate);
+            addPayroll.executeUpdate();
+            addPayrollCheck = true;
+        }catch (Exception e){
+            e.printStackTrace();
+            addPayrollCheck = false;
+        }
+
+        //adds new employee data to the benefits table
+        boolean addBenefitsCheck;
+        String addBenefitsString = "INSERT INTO benefits(emp_id, vacation_leave, sick_leave, paid_leave, health_insurance) " +
+                "VALUES (?, ?, ?, ?, ?);";
+
+        try {
+            PreparedStatement addBenefits = connection.prepareStatement(addBenefitsString);
+            addBenefits.setInt(1, this.empId.size() + 1);
+            addBenefits.setInt(2, vacationLeave);
+            addBenefits.setInt(3, sickLeave);
+            addBenefits.setInt(4, paidLeave);
+            addBenefits.setInt(5, healthInsurance);
+            addBenefits.executeUpdate();
+            addBenefitsCheck = true;
+        }catch (Exception e){
+            e.printStackTrace();
+            addBenefitsCheck = false;
+        }
+
+        if(addEmployeeCheck && addPayrollCheck && addBenefitsCheck){
+            System.out.println("Employee Successfully Added");
+        }
+        //clears current ArrayLists, so they can be populated with the updated data
+        //clears Employee Table ArrayLists
+        this.empId.clear();
+        this.firstName.clear();
+        this.lastName.clear();
+        this.email.clear();
+        this.dateOfBirth.clear();
+        this.role.clear();
+        this.address.clear();
+        this.state.clear();
+        this.inTraining.clear();
+        this.performance.clear();
+        this.levelInCompany.clear();
+        this.inManagement.clear();
+        this.startDate.clear();
+
+        //clears Payroll Table ArrayLists
+        this.payrollEmpId.clear();
+        this.salary.clear();
+        this.hoursWorked.clear();
+        this.rate.clear();
+        this.updatedSalary.clear();
+
+        //clears Benefit Table ArrayLists
+        this.benefitsEmpId.clear();
+        this.vacationLeave.clear();
+        this.sickLeave.clear();
+        this.paidLeave.clear();
+        this.healthInsurance.clear();
+
+    }
+
+    //Gets user input to select role to be shown
+    public void listSpecificRole(){
+        int roleChoice = -1;
+        Scanner input = new Scanner(System.in);
+        //fills roleSet with all unique role titles
+        TreeSet<String> roleSet = new TreeSet<>(this.getRole());
+        ArrayList<String> roleList = new ArrayList<>(roleSet);
+        do {
+            //iterates through ArrayList to give user options
+            System.out.println("Please Choose a Role: ");
+            for (int i = 0; i < roleList.size(); i++){
+                System.out.println("[" + (i + 1) + "]" + " " + roleList.get(i));
+            }
+            System.out.println("[0] Exit");
+            //Gets user input
+            try {
+                roleChoice = Integer.parseInt(input.nextLine());
+            } catch (Exception e) {
+                System.out.println("Invalid Choice");
+            }if (roleChoice == 0){
+                break;
+            } else if (roleChoice < 0 || roleChoice > roleList.size()) {
+                System.out.println("Invalid Choice");
+            }else {
+                //outputs employee data based on previous role choice
+                String inTraining;
+                String roleToGet = roleList.get(roleChoice - 1);
+                ArrayList<Integer> employeesToGet = new ArrayList<>();
+                //fills employeesToGet with employees that have the same given role
+                for (int i = 0; i < this.role.size(); i++){
+                    if (this.role.get(i).equalsIgnoreCase(roleToGet)){
+                        employeesToGet.add(i);
+                    }
+                }
+                //output table for employee data
+                System.out.format("%-12s %-24s %-18s %-30s %-20s %-24s \n", "Employee ID", "Name", "Role",
+                        "Email", "Performance Rating", "Currently in Training");
+                for (int index : employeesToGet) {
+                    inTraining = "";
+                    if (this.inTraining.get(index) == 1) {
+                        inTraining = "Yes";
+                    } else {
+                        inTraining = "No";
+                    }
+                    System.out.format("%-12s %-24s %-18s %-30s %-20s %-24s \n", empId.get(index), firstName.get(index) + " " + lastName.get(index),
+                            role.get(index), email.get(index), performance.get(index), inTraining);
+                }
+                break;
+            }
+        } while (true);
+    }
+
+    //outputs the data for all employees
+    public void outputAllEmployees(){
+        String inTraining;
+        System.out.format("%-12s %-24s %-18s %-30s %-20s %-24s \n", "Employee ID", "Name", "Role",
+                "Email", "Performance Rating", "Currently in Training");
+        for (int index : empId){
+            index -= 1;
+            inTraining = "";
+            if (this.inTraining.get(index) == 1) {
+                inTraining = "Yes";
+            } else {
+                inTraining = "No";
+            }
+            System.out.format("%-12s %-24s %-18s %-30s %-20s %-24s \n", empId.get(index), firstName.get(index) + " " + lastName.get(index),
+                    role.get(index), email.get(index), performance.get(index), inTraining);
+        }
+    }
+
+    //outputs the data for a single employee based on the given employee ID
+    public void outputSingleEmployee(int empID) {
         String finalString = "";
         int index = getIndexOfEmpID(empID);
         if (index == -1){
-            finalString = "Employee Not Found!";
+            System.out.println("Employee Not Found!");
         } else {
             finalString = "Employee ID: " + empId.get(index) + "\n";
             finalString += "Name: " + firstName.get(index) + " " + lastName.get(index) + "\n";
             finalString += "Role: " + role.get(index) + "\n";
             finalString += "Email: " + email.get(index) + "\n";
-            finalString += "Performance: " + performance.get(index) + "\n";
+            finalString += "Performance Rating: " + performance.get(index) + "\n";
             if (inTraining.get(index) == 1) {
                 finalString += "Currently in Training: Yes";
             } else {
                 finalString += "Currently in Training: No";
             }
         }
-
-        return finalString;
+        System.out.println(finalString);
     }
-
+    
+    //Outputs salary data for all employees
+    public void generatePayroll(){
+        System.out.format("%-12s %-24s %-24s %-24s %-12s %-12s \n", "Employee ID", "Name", "Salary Before Expenses",
+                "Salary After Expenses", "Hourly Rate", "Hours Worked");
+        for (int index : empId){
+            index -= 1;
+            DecimalFormat df = new DecimalFormat("#.00");
+            System.out.format("%-12s %-24s $%-24s $%-24s $%-12s %-12s \n", empId.get(index), firstName.get(index) + " " + lastName.get(index),
+                    df.format(salary.get(index)), df.format(updatedSalary.get(index)), df.format(rate.get(index)), hoursWorked.get(index));
+        }
+    }
 
     public void computeSalary() {
         // Calculates the correct salary by subtracting the cost of health insurance from it.
