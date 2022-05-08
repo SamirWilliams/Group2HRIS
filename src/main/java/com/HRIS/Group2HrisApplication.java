@@ -104,7 +104,6 @@ public class Group2HrisApplication {
 		System.out.println("End of Program");
 
 	}
-
 	//Trims string input after "=" Character
 	public static String trimString(String stringToTrim){
 		stringToTrim = stringToTrim.substring(stringToTrim.indexOf("=") + 1);

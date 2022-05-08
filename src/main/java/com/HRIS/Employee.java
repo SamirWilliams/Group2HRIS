@@ -104,7 +104,7 @@ public class Employee {
         inManagement.clear();
         startDate.clear();
     }
-
+  
     public void readBenefits(Statement statement) throws SQLException {
         ResultSet resultSetBenefits = statement.executeQuery("select * from benefits");
 
