@@ -972,35 +972,7 @@ public class Employee {
             System.out.println("Employee Successfully Added");
         }
         //clears current ArrayLists, so they can be populated with the updated data
-        //clears Employee Table ArrayLists
-        this.empId.clear();
-        this.firstName.clear();
-        this.lastName.clear();
-        this.email.clear();
-        this.dateOfBirth.clear();
-        this.role.clear();
-        this.address.clear();
-        this.state.clear();
-        this.inTraining.clear();
-        this.performance.clear();
-        this.levelInCompany.clear();
-        this.inManagement.clear();
-        this.startDate.clear();
-
-        //clears Payroll Table ArrayLists
-        this.payrollEmpId.clear();
-        this.salary.clear();
-        this.hoursWorked.clear();
-        this.rate.clear();
-        this.updatedSalary.clear();
-
-        //clears Benefit Table ArrayLists
-        this.benefitsEmpId.clear();
-        this.vacationLeave.clear();
-        this.sickLeave.clear();
-        this.paidLeave.clear();
-        this.healthInsurance.clear();
-
+        clearAll();
     }
 
     public void updateEmployee(Connection connection) throws Exception {
