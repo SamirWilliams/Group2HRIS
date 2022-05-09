@@ -1,5 +1,7 @@
 package com.HRIS;
 
+import com.sun.jdi.Type;
+
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -1001,6 +1003,193 @@ public class Employee {
 
     }
 
+    public void updateEmployee(Connection connection) throws Exception {
+
+        String table = null;
+        String column = null;
+        String newValue;
+
+        Scanner input = new Scanner(System.in);
+
+        int empID = -1;
+        boolean empIDCheck = false;
+
+        do {
+            System.out.println("Enter Employee ID of Employee you Would Like to Update:");
+            // Validate employee ID
+            try {
+                empID = Integer.parseInt(input.nextLine());
+                if (empID == 0) {
+                    System.exit(0);
+                }
+
+                empIDCheck = Group2HrisApplication.employeeValidation(this, empID);
+
+                if (empID < 1 || !empIDCheck) {
+                    System.out.println("Invalid ID");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid Choice");
+            }
+        } while (!empIDCheck);
+
+        int menuChoice = -1;
+
+        System.out.println("Make a Selection to Update:");
+
+        System.out.println("[1] Update Employee Information");
+        System.out.println("[2] Update Payroll");
+        System.out.println("[3] Update Benefits");
+        System.out.println("[0] Exit");
+
+        int updateSelection = -1;
+        do {
+            try {
+                //Update menu input validation
+                updateSelection = Integer.parseInt(input.nextLine());
+                if (updateSelection < 0 || updateSelection > 3) {
+                    System.out.println("Please enter a number from 0-3.");
+                } else if (updateSelection == 0) {
+                    System.exit(0);
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid Choice");
+            }
+        } while (updateSelection < 0 || updateSelection > 3);
+
+        switch (updateSelection) {
+            case 1:
+                table = "employee";
+
+                String empSelectionArray[] = new String[]{"emp_id", "first_name", "last_name", "email", "date_of_birth", "role",
+                        "address", "state", "in_training", "performance", "level_in_company", "in_management", "start_date"};
+                int empUpdateSelection = -1;
+
+                System.out.println("Make a Selection to Update");
+
+                System.out.println("[1] Update Employee ID");
+                System.out.println("[2] Update First Name");
+                System.out.println("[3] Update Last Name");
+                System.out.println("[4] Update Email");
+                System.out.println("[5] Update Date Of Birth");
+                System.out.println("[6] Update Role");
+                System.out.println("[7] Update Address");
+                System.out.println("[8] Update State");
+                System.out.println("[9] Update In Training");
+                System.out.println("[10] Update Performance");
+                System.out.println("[11] Update Level In Company");
+                System.out.println("[12] Update In Management");
+                System.out.println("[13] Update Start Date");
+                System.out.println("[0] Exit");
+
+                do {
+                    try {
+                        empUpdateSelection = Integer.parseInt(input.nextLine());
+                        if (empUpdateSelection < 0 || empUpdateSelection > 13) {
+                            System.out.println("Please enter a number from 0-13.");
+                        } else if (empUpdateSelection == 0) {
+                            System.exit(0);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Invalid Choice");
+                    }
+                } while (updateSelection < 0 || updateSelection > 13);
+
+                //Select the correct SQL table from the array, add to column to later update
+                column = empSelectionArray[empUpdateSelection - 1];
+                break;
+
+            case 2:
+                table = "payroll";
+
+                String payrollSelectionArray[] = new String[]{"salary", "hours_worked", "rate"};
+                int payrollUpdateSelection = -1;
+
+                System.out.println("Make a Selection to Update");
+
+                System.out.println("[1] Update Salary");
+                System.out.println("[2] Update Hours Worked");
+                System.out.println("[3] Update Rate");
+                System.out.println("[0] Exit");
+
+                do {
+                    try {
+                        payrollUpdateSelection = Integer.parseInt(input.nextLine());
+                        if (payrollUpdateSelection < 0 || payrollUpdateSelection > 3) {
+                            System.out.println("Please enter a number from 0-3.");
+                        } else if (payrollUpdateSelection == 0) {
+                            System.exit(0);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Invalid Choice");
+                    }
+                } while (payrollUpdateSelection < 0 || payrollUpdateSelection > 3);
+
+                column = payrollSelectionArray[payrollUpdateSelection - 1];
+                break;
+
+            case 3:
+                table = "benefits";
+
+                String benefitsSelectionArray[] = new String[]{"vacation_leave", "sick_leave", "paid_leave", "health_insurance"};
+                int benefitsUpdateSelection = -1;
+
+                System.out.println("Make a Selection to Update");
+
+                System.out.println("[1] Update Vacation Leave");
+                System.out.println("[2] Update Sick Leave");
+                System.out.println("[3] Update Paid Leave");
+                System.out.println("[4] Update Health Insurance");
+                System.out.println("[0] Exit");
+
+                do {
+                    try {
+                        benefitsUpdateSelection = Integer.parseInt(input.nextLine());
+                        if (benefitsUpdateSelection < 0 || benefitsUpdateSelection > 4) {
+                            System.out.println("Please enter a number from 0-4.");
+                        } else if (benefitsUpdateSelection == 0) {
+                            System.exit(0);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Invalid Choice");
+                    }
+                } while (benefitsUpdateSelection < 0 || benefitsUpdateSelection > 4);
+
+                column = benefitsSelectionArray[benefitsUpdateSelection - 1];
+                break;
+
+            case 0:
+                System.exit(0);
+        }
+
+        boolean checkValue = true;
+        do {
+            try {
+                System.out.println("Please Add Your New Value:");
+                newValue = input.nextLine();
+
+                String updateString = "UPDATE " + table + " SET " + column + "  = ? WHERE emp_id = ?;";
+
+                PreparedStatement addUpdate = connection.prepareStatement(updateString);
+
+                addUpdate.setString(1, newValue);
+                addUpdate.setInt(2, empID);
+
+                addUpdate.executeUpdate();
+
+            //Handle SQL errors when wrong values inserted
+                //TODO Add better input validation
+            } catch (Exception e) {
+                System.out.println("Invalid Value");
+                checkValue = false;
+                continue;
+            }
+            checkValue = true;
+        } while (checkValue == false);
+
+        //clears all employee, benefits, etc arrays
+        clearAll();
+    }
     //Gets user input to select role to be shown
     public void listSpecificRole(){
         int roleChoice = -1;

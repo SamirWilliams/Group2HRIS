@@ -141,13 +141,15 @@ public class Group2HrisApplication {
 		int empID = -1;
 		boolean empIDCheck = false;
 		Scanner input = new Scanner(System.in);
+
 		do {
 			System.out.println("Make a Selection: ");
 			System.out.println("[1] List All Employees");
 			System.out.println("[2] List Specific Role");
 			System.out.println("[3] List Specific Employee");
 			System.out.println("[4] Add Employee");
-			System.out.println("[5] Generate Payroll");
+			System.out.println("[5] Update Employee");
+			System.out.println("[6] Generate Payroll");
 			System.out.println("[0] Exit");
 			try {
 				menuChoice = Integer.parseInt(input.nextLine());
@@ -204,6 +206,22 @@ public class Group2HrisApplication {
 					pressEnterKeyToContinue();
 					break;
 				case 5:
+					stream.updateEmployee(connection);
+					statement = connection.createStatement();
+
+					//grabs employee data
+					stream.readEmployee(statement);
+
+					//grabs payroll data
+					stream.readPayroll(statement);
+
+					//Grabs benefits data
+					stream.readBenefits(statement);
+
+					stream.computeSalary();
+					pressEnterKeyToContinue();
+					break;
+				case 6:
 					stream.generatePayroll();
 					pressEnterKeyToContinue();
 					break;
