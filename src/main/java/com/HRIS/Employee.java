@@ -1016,6 +1016,7 @@ public class Employee {
 
         do {
             System.out.println("Enter Employee ID of Employee you Would Like to Update:");
+            // Validate employee ID
             try {
                 empID = Integer.parseInt(input.nextLine());
                 if (empID == 0) {
@@ -1044,7 +1045,7 @@ public class Employee {
         int updateSelection = -1;
         do {
             try {
-
+                //Update menu input validation
                 updateSelection = Integer.parseInt(input.nextLine());
                 if (updateSelection < 0 || updateSelection > 3) {
                     System.out.println("Please enter a number from 0-3.");
@@ -1094,6 +1095,7 @@ public class Employee {
                     }
                 } while (updateSelection < 0 || updateSelection > 13);
 
+                //Select the correct SQL table from the array, add to column to later update
                 column = empSelectionArray[empUpdateSelection - 1];
                 break;
 
@@ -1175,6 +1177,7 @@ public class Employee {
 
                 addUpdate.executeUpdate();
 
+            //Handle SQL errors when wrong values inserted
                 //TODO Add better input validation
             } catch (Exception e) {
                 System.out.println("Invalid Value");
@@ -1184,6 +1187,8 @@ public class Employee {
             checkValue = true;
         } while (checkValue == false);
 
+        //clears all employee, benefits, etc arrays
+        clearAll();
     }
     //Gets user input to select role to be shown
     public void listSpecificRole(){
