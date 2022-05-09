@@ -601,19 +601,6 @@ public class Employee {
         }
     }
 
-    public void listTimeOff(int empID){
-        String outputString = "";
-        int index = getIndexOfEmpID(empID);
-        if (index == -1){
-            System.out.println("Employee Not Found!");
-        } else {
-            outputString = "Vacation Leave: " + vacationLeave.get(index) + "\n";
-            outputString += "Sick Leave: " + sickLeave.get(index) + "\n";
-            outputString += "Paid Time Off: " + paidLeave.get(index);
-        }
-        System.out.println(outputString);
-    }
-
     //adds a new employee to the database
     public void addEmployee(Connection connection) throws Exception{
         Scanner input = new Scanner(System.in);
@@ -1086,23 +1073,23 @@ public class Employee {
 
     //outputs the data for a single employee based on the given employee ID
     public void outputSingleEmployee(int empID) {
-        String outputString = "";
+        String finalString = "";
         int index = getIndexOfEmpID(empID);
         if (index == -1){
             System.out.println("Employee Not Found!");
         } else {
-            outputString = "Employee ID: " + empId.get(index) + "\n";
-            outputString += "Name: " + firstName.get(index) + " " + lastName.get(index) + "\n";
-            outputString += "Role: " + role.get(index) + "\n";
-            outputString += "Email: " + email.get(index) + "\n";
-            outputString += "Performance Rating: " + performance.get(index) + "\n";
+            finalString = "Employee ID: " + empId.get(index) + "\n";
+            finalString += "Name: " + firstName.get(index) + " " + lastName.get(index) + "\n";
+            finalString += "Role: " + role.get(index) + "\n";
+            finalString += "Email: " + email.get(index) + "\n";
+            finalString += "Performance Rating: " + performance.get(index) + "\n";
             if (inTraining.get(index) == 1) {
-                outputString += "Currently in Training: Yes";
+                finalString += "Currently in Training: Yes";
             } else {
-                outputString += "Currently in Training: No";
+                finalString += "Currently in Training: No";
             }
         }
-        System.out.println(outputString);
+        System.out.println(finalString);
     }
     
     //Outputs salary data for all employees
