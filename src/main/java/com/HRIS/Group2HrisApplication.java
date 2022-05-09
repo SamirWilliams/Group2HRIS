@@ -144,15 +144,16 @@ public class Group2HrisApplication {
 			System.out.println("[2] List Specific Role");
 			System.out.println("[3] List Specific Employee");
 			System.out.println("[4] Add Employee");
-			System.out.println("[5] Generate Payroll");
-			System.out.println("[6] Go To Your Employee View");
+			System.out.println("[5] Update Employee");
+			System.out.println("[6] Generate Payroll");
+			System.out.println("[7] Go To Your Employee View");
 			System.out.println("[0] Exit");
 			try {
 				menuChoice = Integer.parseInt(input.nextLine());
 			} catch (Exception e) {
 				System.out.println("Invalid Choice");
 			}
-			if (menuChoice < 0 || menuChoice > 6) {
+			if (menuChoice < 0 || menuChoice > 7) {
 				System.out.println("Invalid Choice");
 			}
 			switch (menuChoice){
@@ -198,14 +199,48 @@ public class Group2HrisApplication {
 					//Grabs benefits data
 					stream.readBenefits(statement);
 
+					//Grabs performance values data
+					stream.readPerformanceValues(statement);
+
+					//Grabs company levels data
+					stream.readCompanyLevels(statement);
+
+					//Grab health_levels data
+					stream.readHealthLevels(statement);
+
 					stream.computeSalary();
 					pressEnterKeyToContinue();
 					break;
 				case 5:
-					stream.generatePayroll();
+					stream.updateEmployee(connection);
+					statement = connection.createStatement();
+
+					//grabs employee data
+					stream.readEmployee(statement);
+
+					//grabs payroll data
+					stream.readPayroll(statement);
+
+					//Grabs benefits data
+					stream.readBenefits(statement);
+
+					//Grabs performance values data
+					stream.readPerformanceValues(statement);
+
+					//Grabs company levels data
+					stream.readCompanyLevels(statement);
+
+					//Grab health_levels data
+					stream.readHealthLevels(statement);
+
+					stream.computeSalary();
 					pressEnterKeyToContinue();
 					break;
 				case 6:
+					stream.generatePayroll();
+					pressEnterKeyToContinue();
+					break;
+				case 7:
 					employeeMenu(stream, empID);
 					break;
 			}
