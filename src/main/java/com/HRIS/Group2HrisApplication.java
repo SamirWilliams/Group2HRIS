@@ -98,7 +98,7 @@ public class Group2HrisApplication {
 			managementMenu(stream, connection);
 		} else {
 			//TODO Employee Menu
-			employeeMenu(stream);
+			employeeMenu(stream, empID);
 		}
 
 		System.out.println("End of Program");
@@ -252,14 +252,14 @@ public class Group2HrisApplication {
 	}
 
 	//Entire Normal Employee Menu System
-	public static void employeeMenu(Employee stream){
+	public static void employeeMenu(Employee stream, int empID){
 		int menuChoice = -1;
 		Scanner input = new Scanner(System.in);
 		do {
 			System.out.println("Make a Selection: ");
-			System.out.println("[1] List PTO");
-			System.out.println("[2] List Current Salary");
-			System.out.println("[3] List Your Information");
+			System.out.println("[1] List Your Information");
+			System.out.println("[2] List Time Off");
+			System.out.println("[3] List Current Salary");
 			System.out.println("[0] Exit");
 			try {
 				menuChoice = Integer.parseInt(input.nextLine());
@@ -271,13 +271,19 @@ public class Group2HrisApplication {
 			}
 			switch(menuChoice){
 				case 1:
+					stream.outputSingleEmployee(empID);
+					pressEnterKeyToContinue();
 					break;
 				case 2:
+					stream.listTimeOff(empID);
+					pressEnterKeyToContinue();
 					break;
 				case 3:
+					System.out.format("Your Salary Before Expenses $%.2f\n", stream.getSalary(empID));
+					System.out.format("Your Salary After Expenses $%.2f\n", stream.getUpdatedSalary(empID));
+					pressEnterKeyToContinue();
 					break;
 			}
-
 		} while (menuChoice != 0);
 	}
 

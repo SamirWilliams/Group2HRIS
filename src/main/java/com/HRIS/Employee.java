@@ -603,6 +603,19 @@ public class Employee {
         }
     }
 
+    public void listTimeOff(int empID){
+        String outputString = "";
+        int index = getIndexOfEmpID(empID);
+        if (index == -1){
+            System.out.println("Employee Not Found!");
+        } else {
+            outputString = "Vacation Leave: " + vacationLeave.get(index) + "\n";
+            outputString += "Sick Leave: " + sickLeave.get(index) + "\n";
+            outputString += "Paid Time Off: " + paidLeave.get(index);
+        }
+        System.out.println(outputString);
+    }
+
     //adds a new employee to the database
     public void addEmployee(Connection connection) throws Exception{
         Scanner input = new Scanner(System.in);
