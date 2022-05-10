@@ -94,10 +94,8 @@ public class Group2HrisApplication {
 
 		//TODO Menu System
 		if (managementCheck == true){
-			//TODO Management Menu
-			managementMenu(stream, connection);
+			managementMenu(stream, connection, empID);
 		} else {
-			//TODO Employee Menu
 			employeeMenu(stream, empID);
 		}
 
@@ -136,9 +134,9 @@ public class Group2HrisApplication {
 	}
 
 	//Entire Management Menu System
-	public static void managementMenu(Employee stream, Connection connection) throws Exception {
+	public static void managementMenu(Employee stream, Connection connection, int empID) throws Exception {
 		int menuChoice = -1;
-		int empID = -1;
+		int empIDToGet = -1;
 		boolean empIDCheck = false;
 		Scanner input = new Scanner(System.in);
 
@@ -173,11 +171,11 @@ public class Group2HrisApplication {
 					do {
 						System.out.print("Enter Employee ID or Enter 0 to go back: ");
 						try {
-							empID = Integer.parseInt(input.nextLine());
-							if (empID == 0){
+							empIDToGet = Integer.parseInt(input.nextLine());
+							if (empIDToGet == 0){
 								break;
 							}
-							empIDCheck = employeeValidation(stream, empID);
+							empIDCheck = employeeValidation(stream, empIDToGet);
 							if (empID < 1 || !empIDCheck) {
 								System.out.println("Invalid ID");
 							}
@@ -185,8 +183,8 @@ public class Group2HrisApplication {
 							System.out.println("Invalid Choice");
 						}
 					} while (!empIDCheck);
-					if (empID != 0){
-						stream.outputSingleEmployee(empID);
+					if (empIDToGet != 0){
+						stream.outputSingleEmployee(empIDToGet);
 						pressEnterKeyToContinue();
 					}
 					break;
@@ -289,9 +287,10 @@ public class Group2HrisApplication {
 
 	//Pauses program to get user input to continue
 	private static void pressEnterKeyToContinue() {
-		System.out.println("Press Enter key to continue...");
+		System.out.print("Press Enter key to continue...");
 		Scanner input = new Scanner(System.in);
 		input.nextLine();
+		System.out.println();
 	}
 
 }
