@@ -94,11 +94,9 @@ public class Group2HrisApplication {
 
 		//TODO Menu System
 		if (managementCheck == true){
-			//TODO Management Menu
-			managementMenu(stream, connection);
+			managementMenu(stream, connection, empID);
 		} else {
-			//TODO Employee Menu
-			employeeMenu(stream);
+			employeeMenu(stream, empID);
 		}
 
 		System.out.println("End of Program");
@@ -136,9 +134,9 @@ public class Group2HrisApplication {
 	}
 
 	//Entire Management Menu System
-	public static void managementMenu(Employee stream, Connection connection) throws Exception {
+	public static void managementMenu(Employee stream, Connection connection, int empID) throws Exception {
 		int menuChoice = -1;
-		int empID = -1;
+		int empIDToGet = -1;
 		boolean empIDCheck = false;
 		Scanner input = new Scanner(System.in);
 
@@ -151,13 +149,14 @@ public class Group2HrisApplication {
 			System.out.println("[5] Update Employee");
 			System.out.println("[6] Delete Employee");
 			System.out.println("[7] Generate Payroll");
+			System.out.println("[8] Go To Your Employee View");
 			System.out.println("[0] Exit");
 			try {
 				menuChoice = Integer.parseInt(input.nextLine());
 							} catch (Exception e) {
 				System.out.println("Invalid Choice");
 			}
-			if (menuChoice < 0 || menuChoice > 7) {
+			if (menuChoice < 0 || menuChoice > 8) {
 				System.out.println("Invalid Choice");
 			}
 			switch (menuChoice){
@@ -173,11 +172,11 @@ public class Group2HrisApplication {
 					do {
 						System.out.print("Enter Employee ID or Enter 0 to go back: ");
 						try {
-							empID = Integer.parseInt(input.nextLine());
-							if (empID == 0){
+							empIDToGet = Integer.parseInt(input.nextLine());
+							if (empIDToGet == 0){
 								break;
 							}
-							empIDCheck = employeeValidation(stream, empID);
+							empIDCheck = employeeValidation(stream, empIDToGet);
 							if (empID < 1 || !empIDCheck) {
 								System.out.println("Invalid ID");
 							}
@@ -185,8 +184,8 @@ public class Group2HrisApplication {
 							System.out.println("Invalid Choice");
 						}
 					} while (!empIDCheck);
-					if (empID != 0){
-						stream.outputSingleEmployee(empID);
+					if (empIDToGet != 0){
+						stream.outputSingleEmployee(empIDToGet);
 						pressEnterKeyToContinue();
 					}
 					break;
@@ -203,6 +202,15 @@ public class Group2HrisApplication {
 					//Grabs benefits data
 					stream.readBenefits(statement);
 
+					//Grabs performance values data
+					stream.readPerformanceValues(statement);
+
+					//Grabs company levels data
+					stream.readCompanyLevels(statement);
+
+					//Grab health_levels data
+					stream.readHealthLevels(statement);
+
 					stream.computeSalary();
 					pressEnterKeyToContinue();
 					break;
@@ -218,6 +226,15 @@ public class Group2HrisApplication {
 
 					//Grabs benefits data
 					stream.readBenefits(statement);
+
+					//Grabs performance values data
+					stream.readPerformanceValues(statement);
+
+					//Grabs company levels data
+					stream.readCompanyLevels(statement);
+
+					//Grab health_levels data
+					stream.readHealthLevels(statement);
 
 					stream.computeSalary();
 					pressEnterKeyToContinue();
@@ -244,19 +261,22 @@ public class Group2HrisApplication {
 					stream.generatePayroll();
 					pressEnterKeyToContinue();
 					break;
+				case 8:
+					employeeMenu(stream, empID);
+					break;
 			}
 		} while (menuChoice != 0);
 	}
 
 	//Entire Normal Employee Menu System
-	public static void employeeMenu(Employee stream){
+	public static void employeeMenu(Employee stream, int empID){
 		int menuChoice = -1;
 		Scanner input = new Scanner(System.in);
 		do {
 			System.out.println("Make a Selection: ");
-			System.out.println("[1] List PTO");
-			System.out.println("[2] List Current Salary");
-			System.out.println("[3] List Your Information");
+			System.out.println("[1] List Your Information");
+			System.out.println("[2] List Time Off");
+			System.out.println("[3] List Current Salary");
 			System.out.println("[0] Exit");
 			try {
 				menuChoice = Integer.parseInt(input.nextLine());
@@ -268,21 +288,28 @@ public class Group2HrisApplication {
 			}
 			switch(menuChoice){
 				case 1:
+					stream.outputSingleEmployee(empID);
+					pressEnterKeyToContinue();
 					break;
 				case 2:
+					stream.listTimeOff(empID);
+					pressEnterKeyToContinue();
 					break;
 				case 3:
+					System.out.format("Your Salary Before Expenses $%.2f\n", stream.getSalary(empID));
+					System.out.format("Your Salary After Expenses $%.2f\n", stream.getUpdatedSalary(empID));
+					pressEnterKeyToContinue();
 					break;
 			}
-
 		} while (menuChoice != 0);
 	}
 
 	//Pauses program to get user input to continue
 	private static void pressEnterKeyToContinue() {
-		System.out.println("Press Enter key to continue...");
+		System.out.print("Press Enter key to continue...");
 		Scanner input = new Scanner(System.in);
 		input.nextLine();
+		System.out.println();
 	}
 
 }
