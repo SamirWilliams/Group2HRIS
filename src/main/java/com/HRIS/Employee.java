@@ -990,11 +990,11 @@ public class Employee {
 
     public void updateEmployee(Connection connection) throws Exception {
 
+        Scanner input = new Scanner(System.in);
+
         String table = null;
         String column = null;
         String newValue;
-
-        Scanner input = new Scanner(System.in);
 
         int empID = -1;
         boolean empIDCheck = false;
@@ -1042,43 +1042,43 @@ public class Employee {
             }
         } while (updateSelection < 0 || updateSelection > 3);
 
+        //Selects table to access based on number entered into updateSelection
         switch (updateSelection) {
             case 1:
                 table = "employee";
 
-                String empSelectionArray[] = new String[]{"emp_id", "first_name", "last_name", "email", "date_of_birth", "role",
+                String empSelectionArray[] = new String[]{"first_name", "last_name", "email", "date_of_birth", "role",
                         "address", "state", "in_training", "performance", "level_in_company", "in_management", "start_date"};
                 int empUpdateSelection = -1;
 
                 System.out.println("Make a Selection to Update");
 
-                System.out.println("[1] Update Employee ID");
-                System.out.println("[2] Update First Name");
-                System.out.println("[3] Update Last Name");
-                System.out.println("[4] Update Email");
-                System.out.println("[5] Update Date Of Birth");
-                System.out.println("[6] Update Role");
-                System.out.println("[7] Update Address");
-                System.out.println("[8] Update State");
-                System.out.println("[9] Update In Training");
-                System.out.println("[10] Update Performance");
-                System.out.println("[11] Update Level In Company");
-                System.out.println("[12] Update In Management");
-                System.out.println("[13] Update Start Date");
+                System.out.println("[1] Update First Name");
+                System.out.println("[2] Update Last Name");
+                System.out.println("[3] Update Email");
+                System.out.println("[4] Update Date Of Birth");
+                System.out.println("[5] Update Role");
+                System.out.println("[6] Update Address");
+                System.out.println("[7] Update State");
+                System.out.println("[8] Update In Training");
+                System.out.println("[9] Update Performance");
+                System.out.println("[10] Update Level In Company");
+                System.out.println("[11] Update In Management");
+                System.out.println("[12] Update Start Date");
                 System.out.println("[0] Exit");
 
                 do {
                     try {
                         empUpdateSelection = Integer.parseInt(input.nextLine());
-                        if (empUpdateSelection < 0 || empUpdateSelection > 13) {
-                            System.out.println("Please enter a number from 0-13.");
+                        if (empUpdateSelection < 0 || empUpdateSelection > 12) {
+                            System.out.println("Please enter a number from 0-12.");
                         } else if (empUpdateSelection == 0) {
                             System.exit(0);
                         }
                     } catch (Exception e) {
                         System.out.println("Invalid Choice");
                     }
-                } while (updateSelection < 0 || updateSelection > 13);
+                } while (updateSelection < 0 || updateSelection > 12);
 
                 //Select the correct SQL table from the array, add to column to later update
                 column = empSelectionArray[empUpdateSelection - 1];
@@ -1147,12 +1147,64 @@ public class Employee {
                 System.exit(0);
         }
 
+        //While loop key
         boolean checkValue = true;
+
         do {
+
+            //Used to Alter Error Message
+            String reminder = "";
+
             try {
+
                 System.out.println("Please Add Your New Value:");
+
                 newValue = input.nextLine();
 
+                /* Input Validation for VARCHAR values which need to accept certain
+                   characters i.e. @ for email,
+                 */
+                Exception invalidCharacter = new Exception("Invalid Format");
+
+                if (column == "email") {
+                    if (newValue.indexOf("@") == -1) {
+                        reminder = ": Correct Format is Email@website.com";
+                        throw invalidCharacter;
+                    }
+                }
+
+                //Loop through each character in a string to check for integers
+                if (column == "first_name" || column == "last_name" || column == "role"
+                        || column == "state") {
+
+                    char[] charArray = newValue.toCharArray();
+
+                    for (char individualChar : charArray) {
+                        if (Character.isDigit(individualChar)) {
+                            reminder = ": Field Accepts Only Alphabetic Characters";
+                            throw invalidCharacter;
+                        }
+                    }
+                }
+                // Remind of format if incorrect format is entered.
+                if (column == "date_of_birth" || column == "start_date") {
+                    reminder = ": Correct Format is: YYYY-MM-DD";
+                }
+
+                //Checks to see if it is binary and corrects if non-binary value entered
+                if (column == "in_training" || column == "in_management") {
+                    if ((Integer.valueOf(newValue)) > 1) {
+                        reminder = ": Correct Format is: Yes/No or 1/0";
+                        throw invalidCharacter;
+                    }
+                    if (newValue.equals("Yes") || newValue.equals("yes") || newValue.equals("Yes")) {
+                        newValue = "1";
+                    } else if (newValue.equals("NO") || newValue.equals("no") || newValue.equals("No")) {
+                        newValue = "0";
+                    }
+                }
+
+                //Update SQL table based on values selected
                 String updateString = "UPDATE " + table + " SET " + column + "  = ? WHERE emp_id = ?;";
 
                 PreparedStatement addUpdate = connection.prepareStatement(updateString);
@@ -1162,19 +1214,62 @@ public class Employee {
 
                 addUpdate.executeUpdate();
 
-            //Handle SQL errors when wrong values inserted
-                //TODO Add better input validation
+              //Handle SQL errors when wrong values inserted
             } catch (Exception e) {
-                System.out.println("Invalid Value");
+                String invalidValMessage = "Invalid Value" + reminder;
+                System.out.println(invalidValMessage);
                 checkValue = false;
                 continue;
             }
+            //If no error caught, break loop
             checkValue = true;
         } while (checkValue == false);
 
         //clears all employee, benefits, etc arrays
         clearAll();
     }
+
+    public void deleteEmployee(Connection connection) throws Exception {
+
+        Scanner input = new Scanner(System.in);
+
+        int empID = -1;
+        boolean empIDCheck = false;
+
+        do {
+            System.out.println("Enter Employee ID of Employee you Would Like to delete:");
+            // Validate employee ID
+            try {
+                empID = Integer.parseInt(input.nextLine());
+                if (empID == 0) {
+                    System.exit(0);
+                }
+
+                empIDCheck = Group2HrisApplication.employeeValidation(this, empID);
+
+                if (empID < 1 || !empIDCheck) {
+                    System.out.println("Invalid ID");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid Choice");
+            }
+        } while (!empIDCheck);
+
+        int menuChoice = -1;
+
+        //Update SQL table based on values selected
+        String updateString = "DELETE FROM employee WHERE emp_id = ?;";
+
+        PreparedStatement addUpdate = connection.prepareStatement(updateString);
+
+        addUpdate.setInt(1, empID);
+
+        addUpdate.executeUpdate();
+
+        //clears all employee, benefits, etc arrays
+        clearAll();
+    }
+
     //Gets user input to select role to be shown
     public void listSpecificRole(){
         int roleChoice = -1;
