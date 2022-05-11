@@ -1000,7 +1000,7 @@ public class Employee {
         boolean empIDCheck = false;
 
         do {
-            System.out.println("Enter Employee ID of Employee you Would Like to Update:");
+            System.out.print("Enter Employee ID of Employee you Would Like to Update:");
             // Validate employee ID
             try {
                 empID = Integer.parseInt(input.nextLine());
@@ -1237,7 +1237,7 @@ public class Employee {
         boolean empIDCheck = false;
 
         do {
-            System.out.println("Enter Employee ID of Employee you Would Like to delete:");
+            System.out.print("Enter Employee ID of Employee you Would Like to delete:");
             // Validate employee ID
             try {
                 empID = Integer.parseInt(input.nextLine());

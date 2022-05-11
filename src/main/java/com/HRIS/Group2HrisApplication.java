@@ -153,7 +153,7 @@ public class Group2HrisApplication {
 			System.out.println("[0] Exit");
 			try {
 				menuChoice = Integer.parseInt(input.nextLine());
-							} catch (Exception e) {
+			} catch (Exception e) {
 				System.out.println("Invalid Choice");
 			}
 			if (menuChoice < 0 || menuChoice > 8) {
@@ -252,6 +252,15 @@ public class Group2HrisApplication {
 
 					//Grabs benefits data
 					stream.readBenefits(statement);
+
+					//Grabs performance values data
+					stream.readPerformanceValues(statement);
+
+					//Grabs company levels data
+					stream.readCompanyLevels(statement);
+
+					//Grab health_levels data
+					stream.readHealthLevels(statement);
 
 					stream.computeSalary();
 					pressEnterKeyToContinue();
