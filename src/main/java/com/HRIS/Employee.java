@@ -1243,6 +1243,48 @@ public class Employee {
         //clears all employee, benefits, etc arrays
         clearAll();
     }
+
+    public void deleteEmployee(Connection connection) throws Exception {
+
+        Scanner input = new Scanner(System.in);
+
+        int empID = -1;
+        boolean empIDCheck = false;
+
+        do {
+            System.out.println("Enter Employee ID of Employee you Would Like to delete:");
+            // Validate employee ID
+            try {
+                empID = Integer.parseInt(input.nextLine());
+                if (empID == 0) {
+                    System.exit(0);
+                }
+
+                empIDCheck = Group2HrisApplication.employeeValidation(this, empID);
+
+                if (empID < 1 || !empIDCheck) {
+                    System.out.println("Invalid ID");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid Choice");
+            }
+        } while (!empIDCheck);
+
+        int menuChoice = -1;
+
+        //Update SQL table based on values selected
+        String updateString = "DELETE FROM employee WHERE emp_id = ?;";
+
+        PreparedStatement addUpdate = connection.prepareStatement(updateString);
+
+        addUpdate.setInt(1, empID);
+
+        addUpdate.executeUpdate();
+
+        //clears all employee, benefits, etc arrays
+        clearAll();
+    }
+
     //Gets user input to select role to be shown
     public void listSpecificRole(){
         int roleChoice = -1;
